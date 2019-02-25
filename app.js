@@ -34,6 +34,8 @@ client.connect();
          if (err)
          {
             var apiresponse = {sucess:true,error_message: err}
+            res.setHeader('Content-Type','application/json');
+            res.send(json.stringify(apiresponse)); 
             client.query('INSERT INTO salesforce.IVL_Error_Log__c (IVL_API_Name__c,IVL_Is_Error_Exception__c,IVL_Contact__c,IVL_Request__c,IVL_Response__c,IVL_Type__c) VALUES(\'mobileregistration\',false,($1),($2),($3),\'inbound\')',
             [req.body.con_id, req.body, JSON.stringify(apiresponse)],
             function(err, result) 
@@ -45,7 +47,10 @@ client.connect();
          }
          else
          {
+            
             var apiresponse = {sucess:true,error_message: null}
+            res.setHeader('Content-Type','application/json');
+            res.send(json.stringify(apiresponse)); 
             client.query('INSERT INTO salesforce.IVL_Error_Log__c (IVL_API_Name__c,IVL_Is_Error_Exception__c,IVL_Contact__c,IVL_Request__c,IVL_Response__c,IVL_Type__c) VALUES(\'mobileregistration\',false,($1),($2),($3),\'inbound\')',
             [req.body.con_id, req.body, JSON.stringify(apiresponse)],
             function(err, result) 
