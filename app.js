@@ -28,14 +28,15 @@ client.connect();
      var device_ID = req.body.device_ID;
      var mpin = req.body.mpin;
 
-    client.query('UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2)  WHERE sfid = ($3)',
+    client.query('UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2)  WHERE sfid = ($3) RETURNING sfid',
      [req.body.device_ID, req.body.mpin, req.body.con_id],
      function(err, result) {
          if (err){
              throw err;
          }
          else{
-             res.send('Records updated successfully!');
+             //res.send('Records updated successfully!');
+             res.send(JSON.stringify(res.rows));
          }
      }
     );
