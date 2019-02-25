@@ -27,9 +27,18 @@ client.connect();
      var mobile_number = req.body.mobile_number;
      var device_ID = req.body.device_ID;
      var mpin = req.body.mpin;
+     var updatequery;
+     if(mpin == "" || mpin== null)
+     {
+        updatequery = 'UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2)  WHERE sfid = ($3)';      
+     }
+     else
+     {
+        updatequery = 'UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2),CRD_Stage__c =\'Mobile Registered\'  WHERE sfid = ($3)';
+     }
 
-    client.query('UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2)  WHERE sfid = ($3)',
-     [req.body.device_ID, req.body.mpin, req.body.con_id],
+    client.query(updatequery,
+     [device_ID, mpin, con_id],
      function(err, result) {
          if (err)
          {
