@@ -27,49 +27,56 @@ client.connect();
      var mobile_number = req.body.mobile_number;
      var device_ID = req.body.device_ID;
      var mpin = req.body.mpin;
-     var updatequery;
-     if(mpin == "" || mpin== null)
-     {
-        updatequery = 'UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2)  WHERE sfid = ($3)';      
-     }
-     else
-     {
-        updatequery = 'UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2),CRD_Stage__c =\'Mobile Registered\'  WHERE sfid = ($3)';
-     }
+    if(mobile_number != null && mobile_number != '')
+    {
+        var updatequery;
+        if(mpin == "" || mpin== null)
+        {
+            updatequery = 'UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2)  WHERE sfid = ($3)';      
+        }
+        else
+        {
+            updatequery = 'UPDATE salesforce.contact SET IVL_Device_Id__c = ($1), IVL_MPIN__c=($2),CRD_Stage__c =\'Mobile Registered\'  WHERE sfid = ($3)';
+        }
 
-    client.query(updatequery,
-     [device_ID, mpin, con_id],
-     function(err, result) {
-         if (err)
-         {
-            var apiresponse = {sucess:true,error_message: err}
-            res.setHeader('Content-Type','application/json');
-            res.send(JSON.stringify(apiresponse)); 
-            client.query('INSERT INTO salesforce.IVL_Error_Log__c (IVL_API_Name__c,IVL_Is_Error_Exception__c,IVL_Contact__c,IVL_Request__c,IVL_Response__c,IVL_Type__c) VALUES(\'mobileregistration\',false,($1),($2),($3),\'inbound\')',
-            [req.body.con_id, req.body, JSON.stringify(apiresponse)],
-            function(err, result) 
+        client.query(updatequery,
+        [device_ID, mpin, con_id],
+        function(err, result) {
+            if (err)
             {
-                if (err)
-                    throw err;   
+                var apiresponse = {sucess:true,error_message: err}
+                res.setHeader('Content-Type','application/json');
+                res.send(JSON.stringify(apiresponse)); 
+                client.query('INSERT INTO salesforce.IVL_Error_Log__c (IVL_API_Name__c,IVL_Is_Error_Exception__c,IVL_Contact__c,IVL_Request__c,IVL_Response__c,IVL_Type__c) VALUES(\'mobileregistration\',false,($1),($2),($3),\'inbound\')',
+                [req.body.con_id, req.body, JSON.stringify(apiresponse)],
+                function(err, result) 
+                {
+                    if (err)
+                        throw err;   
+                });
             }
-            );
-         }
-         else
-         {
-            
-            var apiresponse = {sucess:true,error_message: null}
-            res.setHeader('Content-Type','application/json');
-            res.send(JSON.stringify(apiresponse)); 
-            client.query('INSERT INTO salesforce.IVL_Error_Log__c (IVL_API_Name__c,IVL_Is_Error_Exception__c,IVL_Contact__c,IVL_Request__c,IVL_Response__c,IVL_Type__c) VALUES(\'mobileregistration\',false,($1),($2),($3),\'inbound\')',
-            [req.body.con_id, req.body, JSON.stringify(apiresponse)],
-            function(err, result) 
+            else
             {
-                if (err)
-                    throw err;   
-            }
-            );
-        }   
- });
+                var apiresponse = {sucess:true,error_message: null}
+                res.setHeader('Content-Type','application/json');
+                res.send(JSON.stringify(apiresponse)); 
+                client.query('INSERT INTO salesforce.IVL_Error_Log__c (IVL_API_Name__c,IVL_Is_Error_Exception__c,IVL_Contact__c,IVL_Request__c,IVL_Response__c,IVL_Type__c) VALUES(\'mobileregistration\',false,($1),($2),($3),\'inbound\')',
+                [req.body.con_id, req.body, JSON.stringify(apiresponse)],
+                function(err, result) 
+                {
+                    if (err)
+                        throw err;   
+                });
+            }   
+        });
+    }
+    else
+    {
+        var apiresponse = {sucess:false,error_message: 'Please provide mobile number!'}
+        res.setHeader('Content-Type','application/json');
+        res.send(JSON.stringify(apiresponse));
+    }
+     
 });
  
  app.set('port', process.env.PORT || 3001);
